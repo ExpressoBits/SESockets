@@ -4,12 +4,12 @@ Está biblioteca foi feita para criar conexões simples e faceis com soquetes TC
 
 ## Projetos
 
-###SESockets
+### SESockets
 A biblioteca com o módulo principal criada com tecnologia .NET Standard , assim compatível com qualquer 
 aplicação seja ela em .NET Framework como .NET Core
 
-###SESClient
+### SESClient
 Um projeto de console para conexão de um cliente a um servidor.
 
-###SESServer
+### SESServer
 Um projeto de console para criar servidor que aceite conexão de clientes.
