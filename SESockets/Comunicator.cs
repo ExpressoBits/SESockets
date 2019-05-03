@@ -71,13 +71,5 @@ namespace SESockets
             writer.Close();
             stream.Close();
         }
-
-        /// <summary>
-        /// Desconecta o cliente
-        /// </summary>
-        /// <param name="client"></param>
-        public abstract void DisconnectClient(IDisposable client);
-
-
     }
 }

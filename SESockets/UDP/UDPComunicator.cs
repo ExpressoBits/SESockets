@@ -7,8 +7,11 @@ namespace SESockets.UDP
 {
     public abstract class UDPComunicator : Comunicator
     {
-
-        public virtual void DisconnectClient(UdpClient client)
+        /// <summary>
+        /// Desconecta o cliente
+        /// </summary>
+        /// <param name="client"></param>
+        public void DisconnectClient(UdpClient client)
         {
             Disconnect();
             client.Close();
