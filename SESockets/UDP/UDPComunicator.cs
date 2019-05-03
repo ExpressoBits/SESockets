@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 
-namespace SESockets.TCP
+namespace SESockets.UDP
 {
-    public abstract class TCPComunicator : Comunicator
+    public abstract class UDPComunicator : Comunicator
     {
 
-        public virtual void DisconnectClient(TcpClient client)
+        public virtual void DisconnectClient(UdpClient client)
         {
             Disconnect();
             client.Close();

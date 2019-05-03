@@ -7,9 +7,9 @@ using System.Net.Sockets;
 using System.IO;
 using System.Net;
 
-namespace SESockets
+namespace SESockets.TCP
 {
-    public class TCPClientComunicator : TCPComunicator
+    public class ClientTCPComunicator : TCPComunicator
     {
 
         TcpClient client;
@@ -38,9 +38,6 @@ namespace SESockets
             writer.Write(text);
         }
 
-        
-
-        
 
     }
 }

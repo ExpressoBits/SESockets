@@ -6,9 +6,9 @@ using System.IO;
 using System.Threading;
 using SESockets.Utils;
 
-namespace SESockets
+namespace SESockets.TCP
 {
-    public class TCPServerComunicator : TCPComunicator
+    public class ServerTCPComunicator : TCPComunicator
     {
 
         //TCP para ouvir clientes
