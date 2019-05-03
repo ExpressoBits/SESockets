@@ -11,15 +11,14 @@ namespace SESockets.UDP
     {
 
         public UdpClient listener;
-        public IPEndPoint groupEP;
 
         public override void Connect(IPAddress ip, int port)
         {
             base.Connect(ip, port);
             listener = new UdpClient(port);
             wireConnection.Log("Try connection in IP:" + ip + ":" + port);
-            groupEP = new IPEndPoint(ip, port);
             Run();
+
         }
 
         public void Run()
@@ -34,8 +33,8 @@ namespace SESockets.UDP
                     //TcpClient client = listener.AcceptTcpClient();
                     //NewClient(client);
 
-                    byte[] bytes = listener.Receive(ref groupEP);
-                    Console.WriteLine($"Received broadcast from {groupEP} :");
+                    byte[] bytes = listener.Receive(ref endPoint);
+                    Console.WriteLine($"Received broadcast from {endPoint} :");
                     Console.WriteLine($" {Encoding.ASCII.GetString(bytes, 0, bytes.Length)}");
 
                 }
