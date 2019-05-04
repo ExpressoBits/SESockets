@@ -3,25 +3,52 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
+using System.IO;
 
 namespace SESockets.UDP
 {
     public class ClientUDPComunicator : UDPComunicator
     {
 
-        public UdpClient listener;
+        public UdpClient client;
 
         public override void Connect(IPAddress ip, int port)
         {
             base.Connect(ip, port);
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            client = new UdpClient();
+            client.Connect(ip,port);
+            string t = "";
+            try
+            {
 
+                while (true)
+                {
+                    Console.Write(">");
+                    t = Console.ReadLine();
+                    Send(t);
+                    string r = Receive();
+                    Console.WriteLine("S:"+r);
 
-            byte[] sendbuf = Encoding.ASCII.GetBytes("Teste");
+                }
+            }
+            catch (SocketException e)
+            {
+                wireConnection.Log(e.Message);
+            }
+            
+            wireConnection.Log("Message sent to the broadcast address");
+        }
 
-            s.SendTo(sendbuf, endPoint);
+        public void Send(string text)
+        {
+            byte[] bytes = Encoding.ASCII.GetBytes(text);
+            client.Send(bytes, bytes.Length);
+        }
 
-            Console.WriteLine("Message sent to the broadcast address");
+        public string Receive()
+        {
+            byte[] bytes = client.Receive(ref endPoint);
+            return Encoding.ASCII.GetString(bytes, 0, bytes.Length);
         }
 
 

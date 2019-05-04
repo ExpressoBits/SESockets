@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Net;
-using System.IO;
-using System.Threading;
 using SESockets.Utils;
 
 namespace SESockets
@@ -20,8 +18,7 @@ namespace SESockets
         protected int port = 2108;
 
         protected NetworkStream stream;
-        protected BinaryWriter writer;
-        protected BinaryReader reader;
+        
 
         protected WireConnection wireConnection;
 
@@ -50,26 +47,6 @@ namespace SESockets
             this.wireConnection = wireConnection;
         }
 
-        /// <summary>
-        /// Inicializa o stream criando o BinaryWriter e o BinaryReader
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Init(NetworkStream stream)
-        {
-            this.stream = stream;
-            writer = new BinaryWriter(stream);
-            reader = new BinaryReader(stream);
-        }
-
-        /// <summary>
-        /// Método que disconecta um cliente
-        /// </summary>
-        /// <param name="client"></param>
-        public virtual void Disconnect()
-        {
-            reader.Close();
-            writer.Close();
-            stream.Close();
-        }
+        
     }
 }

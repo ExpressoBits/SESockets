@@ -12,31 +12,52 @@ namespace SESockets.TCP
     public class ClientTCPComunicator : TCPComunicator
     {
 
-        TcpClient client;
+        TcpClient server;
+
+
         
         public override void Connect(IPAddress ip, int port)
         {
             base.Connect(ip, port);
-            client = new TcpClient();
-            client.Connect(ip, port);
+            server = new TcpClient();
+            server.Connect(ip,port);
+            connected = true;
             Run();
         }
 
         public void Run()
         {
-            Init(client.GetStream());
+            Init(server.GetStream());
 
-            string text = reader.ReadString();
+            receiveThread = new Thread(new ThreadStart(Receive));
+            receiveThread.Start();
 
-            wireConnection.Log(text);
+            string t = "";
+            while (t != "END")
+            {
+                Console.Write(">");
+                t = Console.ReadLine();
+                Send(t);
+            }
 
-            DisconnectClient(client);
+            receiveThread.Abort();
+            DisconnectClient(server);
         }
 
         public void Send(string text)
         {
             writer.Write(text);
         }
+
+        public void Receive()
+        {
+            while (connected)
+            {
+                wireConnection.Receive(reader.ReadString());
+            }
+
+        }
+
 
 
     }

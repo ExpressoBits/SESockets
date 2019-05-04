@@ -10,12 +10,13 @@ namespace SESockets.UDP
     public class ServerUDPComunicator : UDPComunicator
     {
 
-        public UdpClient listener;
+        public UdpClient client;
 
         public override void Connect(IPAddress ip, int port)
         {
             base.Connect(ip, port);
-            listener = new UdpClient(port);
+            client = new UdpClient(port);
+            //client.Connect(); //Nao deve ter cliente conectando
             wireConnection.Log("Try connection in IP:" + ip + ":" + port);
             Run();
 
@@ -30,12 +31,10 @@ namespace SESockets.UDP
                 {
 
                     wireConnection.Log("Waiting for broadcast");
-                    //TcpClient client = listener.AcceptTcpClient();
-                    //NewClient(client);
-
-                    byte[] bytes = listener.Receive(ref endPoint);
+                    byte[] bytes = client.Receive(ref endPoint);
                     Console.WriteLine($"Received broadcast from {endPoint} :");
                     Console.WriteLine($" {Encoding.ASCII.GetString(bytes, 0, bytes.Length)}");
+                    client.Send(bytes, bytes.Length);
 
                 }
             }
@@ -45,7 +44,7 @@ namespace SESockets.UDP
             }
             finally
             {
-                Disconnect();
+                //Disconnect();
             }
             
         }

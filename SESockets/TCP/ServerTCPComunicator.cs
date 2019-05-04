@@ -22,6 +22,7 @@ namespace SESockets.TCP
             wireConnection.Log("Try connection in IP:" + ip + ":" + port);
             listener.Start();
             wireConnection.Log("Start server:" + ip + ":" + port);
+            connected = true;
             Run();
         }
 
@@ -53,22 +54,15 @@ namespace SESockets.TCP
 
             Init(client.GetStream());
 
-            string time = System.DateTime.Now.ToString();
-            //byte[] byteTime = System.Text.Encoding.ASCII.GetBytes(time);
-
-
-            try
+            while (connected)
             {
-                //stream.Write(byteTime, 0, byteTime.Length);
-                writer.Write(time);
-                DisconnectClient(client);
-                
-            }
-            catch (SocketException e)
-            {
-                wireConnection.Log(e.ToString());
+                string t = reader.ReadString();
+                if (t == "END") return;
+                wireConnection.Receive(t);
+                writer.Write(t);
             }
         }
+
 
 
 
