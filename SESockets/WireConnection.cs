@@ -7,9 +7,9 @@ namespace SESockets
     public interface WireConnection
     {
 
-        void Send(string text);
+        void Send(byte[] bytes);
 
-        void Receive(string text);
+        void Receive(byte[] bytes);
 
         void Log(string text);
 

@@ -26,12 +26,12 @@ namespace SESockets.Client
 
             if (type == Utils.ConnectionType.TCP)
             {
-                client = new ClientTCPComunicator();
+                client = new TCPComunicator(false);
             }
 
             else //(type == Utils.ConnectionType.UDP)
             {
-                client = new ClientUDPComunicator();
+                client = new UDPComunicator(false);
             }
 
 
@@ -40,7 +40,26 @@ namespace SESockets.Client
             Console.Write("Digite a porta:");
             int port = Convert.ToInt32(Console.ReadLine());
             client.SetWire(this);
-            client.Connect(ip);
+            client.Connect(IPUtils.GetIP(ip));
+
+            bool exit = false;
+            while (!exit)
+            {
+                string t = Console.ReadLine();
+                if (t == "quit")
+                {
+                    exit = true;
+                    break;
+                }
+                else
+                {
+                    client.Send(System.Text.Encoding.ASCII.GetBytes(t));
+                }
+
+                
+            }
+            client.Disconnect();
+
         }
 
         public ConnectionType ConnectionType()
@@ -54,19 +73,19 @@ namespace SESockets.Client
         }
 
 
-        public void Log(string text)
+        public void Log(string message)
         {
-            Console.WriteLine("[LOG]" + text);
+            Console.WriteLine("[LOG]" + message);
         }
 
-        public void Receive(string text)
+        public void Receive(byte[] bytes)
         {
-            Console.WriteLine(text);
+            Console.WriteLine(System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length));
         }
 
-        public void Send(string text)
+        public void Send(byte[] bytes)
         {
-            Console.WriteLine(text);
+            Console.WriteLine(System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length));
         }
     }
 }

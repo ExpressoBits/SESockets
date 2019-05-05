@@ -1,34 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 
 namespace SESockets.UDP
 {
-    public abstract class UDPComunicator : Comunicator
+    public class UDPComunicator : Comunicator
     {
 
-        public IPEndPoint endPoint;
+        #region Data
+        public static UDPComunicator instance;
+        /// <summary>
+        /// For Clients, there is only one and it's the connection to the server.
+        /// For Servers, there are many - one per connected client.
+        /// </summary>
+        List<IPEndPoint> clientList = new List<IPEndPoint>();
 
+        UdpConnectedClient connection;
+        #endregion
 
-        public override void Connect(IPAddress ip, int port)
+        public UDPComunicator(bool isServer)
         {
-            base.Connect(ip, port);
-            endPoint = new IPEndPoint(ip, port);
+            this.isServer = isServer;
+        }
+
+        #region Comunicator
+        public override void Connect(IPAddress ip)
+        {
+            instance = this;
+            if (ip == null)
+            {
+                connection = new UdpConnectedClient();
+            }
+            else
+            {
+                IPEndPoint ipend = new IPEndPoint(ip, Globals.port);
+                connection = new UdpConnectedClient(ipend);
+                AddClient(ipend);
+            }
+        }
+
+        public override void Send(byte[] bytes)
+        {
+            if (isServer)
+            {
+                Receive(bytes);
+            }
+
+            BroadcastMessage(bytes);
+        }
+
+        public override void Disconnect()
+        {
+            connection.Close();
+        }
+        #endregion
+
+        #region UDP
+        internal static void BroadcastMessage(byte[] bytes)
+        {
+            foreach (var ip in instance.clientList)
+            {
+                instance.connection.Send(bytes, ip);
+            }
+        }
+
+        internal static void AddClient(IPEndPoint ipEndpoint)
+        {
+            if (instance.clientList.Contains(ipEndpoint) == false)
+            { // If it's a new client, add to the client list
+                instance.wireConnection.Log($"Connect to {ipEndpoint}");
+                instance.clientList.Add(ipEndpoint);
+            }
         }
 
         /// <summary>
-        /// 
-        /// Desconecta o cliente
+        /// TODO: We need to add timestamps to timeout and remove clients from the list.
         /// </summary>
-        /// <param name="client"></param>
-        public void DisconnectClient(UdpClient client)
+        internal static void RemoveClient(
+        IPEndPoint ipEndpoint)
         {
-            client.Close();
+            instance.clientList.Remove(ipEndpoint);
         }
 
-
+        #endregion
 
     }
 }

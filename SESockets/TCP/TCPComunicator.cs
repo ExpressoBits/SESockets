@@ -3,55 +3,118 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using System.Threading;
 
 
 namespace SESockets.TCP
 {
-    public abstract class TCPComunicator : Comunicator
+
+    /// Multithreading (may lead to a lot of mostly-idle threads), 
+    /// non-blocking, 
+    /// select (rec select or non-blocking on single thread)
+
+    /// DNS
+    //IPHostEntry ipHost = Dns.Resolve("google.com");
+    //ipHost.AddressList[0];
+
+    /// Select
+    //List<Socket> listOfSocketsToCheckForRead = new List<Socket>();
+    //listOfSocketsToCheckForRead.Add(tcpClient.Client);
+    //Socket.Select(listOfSocketsToCheckForRead, null, null, 0);
+    //for(int i = 0; i < listOfSocketsToCheckForRead.Count; i++)
+    //{
+    //  listOfSocketsToCheckForRead[i].Receive(...);
+    //}
+
+    public class TCPComunicator : Comunicator
     {
 
-        protected BinaryWriter writer;
-        protected BinaryReader reader;
-
-        protected bool connected;
-
-
-        protected Thread receiveThread;
+        #region Data
+        public static TCPComunicator instance;
 
         /// <summary>
-        /// Desconecta o cliente
+        /// For Clients, there is only one and it's the connection to the server.
+        /// For Servers, there are many - one per connected client.
         /// </summary>
-        /// <param name="client"></param>
-        public virtual void DisconnectClient(TcpClient client)
-        {
-            Disconnect();
-            client.Close();
-        }
+        List<TcpConnectedClient> clientList = new List<TcpConnectedClient>();
 
         /// <summary>
-        /// Inicializa o stream criando o BinaryWriter e o BinaryReader
+        /// Accepts new connections.  Null for clients.
         /// </summary>
-        /// <param name="stream"></param>
-        public void Init(NetworkStream stream)
+        TcpListener listener;
+        #endregion
+
+
+        public TCPComunicator(bool isServer)
         {
-            this.stream = stream;
-            writer = new BinaryWriter(stream);
-            reader = new BinaryReader(stream);
+            this.isServer = isServer;
         }
 
-        /// <summary>
-        /// Método que disconecta um cliente
-        /// </summary>
-        /// <param name="client"></param>
-        public virtual void Disconnect()
+        #region Comunicator
+        public override void Connect(IPAddress ip)
         {
-            reader.Close();
-            writer.Close();
-            stream.Close();
-            connected = false;
+            instance = this;
+            if (ip == null)
+            { // Server: start listening for connections
+                this.isServer = true;
+                listener = new TcpListener(localaddr: IPAddress.Any, port: Globals.port);
+                listener.Start();
+                listener.BeginAcceptTcpClient(OnServerConnect, null);
+            }
+            else
+            { // Client: try connecting to the server
+                TcpClient client = new TcpClient();
+                TcpConnectedClient connectedClient = new TcpConnectedClient(client);
+                clientList.Add(connectedClient);
+                client.BeginConnect(ip, Globals.port, (ar) => connectedClient.EndConnect(ar), null);
+            }
         }
+
+        public override void Send(byte[] bytes)
+        {
+            BroadcastMessage(bytes);
+
+            if (isServer)
+            {
+                Receive(bytes);
+                //messageToDisplay += message + Environment.NewLine;
+            }
+        }
+
+        public override void Disconnect()
+        {
+            listener?.Stop();
+            for (int i = 0; i < clientList.Count; i++)
+            {
+                clientList[i].Close();
+            }
+        }
+        #endregion
+
+        #region Async Events
+        void OnServerConnect(IAsyncResult ar)
+        {
+            TcpClient tcpClient = listener.EndAcceptTcpClient(ar);
+            clientList.Add(new TcpConnectedClient(tcpClient));
+            listener.BeginAcceptTcpClient(OnServerConnect, null);
+        }
+        #endregion
+
+        #region TCP
+        public void OnDisconnect(TcpConnectedClient client)
+        {
+            clientList.Remove(client);
+        }
+
+        internal static void BroadcastMessage(byte[] bytes)
+        {
+            for (int i = 0; i < instance.clientList.Count; i++)
+            {
+                TcpConnectedClient client = instance.clientList[i];
+                client.Send(bytes);
+            }
+        }
+        #endregion
+
 
     }
 }

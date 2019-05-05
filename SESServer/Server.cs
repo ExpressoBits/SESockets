@@ -26,20 +26,20 @@ namespace SESockets.Server
 
             if (type == Utils.ConnectionType.TCP)
             {
-                server = new ServerTCPComunicator();
+                server = new TCPComunicator(true);
             }
-               
+
             else //(type == Utils.ConnectionType.UDP)
             {
-                server = new ServerUDPComunicator();
+                server = new UDPComunicator(true);
             }
 
             server.SetWire(this);
-            server.Connect(IPUtils.GetLocalIP());
-            
+            server.Connect(null);
 
-            
         }
+
+
 
         public ConnectionType ConnectionType()
         {
@@ -51,23 +51,23 @@ namespace SESockets.Server
             return type==1?Utils.ConnectionType.TCP:Utils.ConnectionType.UDP;
         }
 
-        
 
 
 
-        public void Log(string text)
+
+        public void Log(string message)
         {
-            Console.WriteLine("[LOG]" + text);
+            Console.WriteLine("[LOG]" + message);
         }
 
-        public void Receive(string text)
+        public void Receive(byte[] bytes)
         {
-            Console.WriteLine(text);
+            Console.WriteLine(System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length));
         }
 
-        public void Send(string text)
+        public void Send(byte[] bytes)
         {
-            Console.WriteLine(text);
+            Console.WriteLine(System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length));
         }
     }
 }

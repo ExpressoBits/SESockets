@@ -1,52 +1,31 @@
 ﻿using System;
-using System.Net.Sockets;
+using System.Collections.Generic;
 using System.Net;
-using SESockets.Utils;
+using System.Text;
 
 namespace SESockets
 {
-    /// <summary>
-    /// Classe abstrata que modela um comunicador que é implementado por um servidor ou cliente.
-    /// Tem atributo de ip e porta.
-    /// Contêm também networkStream, binary writer e binary reader
-    /// Deve-se definir um <code>WireConnection</code> para ter acesso ao Log(), Read() e Write()
-    /// </summary>
-    public abstract class Comunicator
+    public abstract class Comunicator : Connection
     {
+        public WireConnection wireConnection;
+        public bool isServer;
 
-        protected IPAddress ip;
-        protected int port = 2108;
 
-        protected NetworkStream stream;
-        
+        public abstract void Connect(IPAddress ip);
 
-        protected WireConnection wireConnection;
+        public abstract void Send(byte[] bytes);
 
-        public virtual void Connect(IPAddress ip, int port)
-        {
-            this.ip = ip;
-            this.port = port;
-        }
+        public abstract void Disconnect();
 
-        public void Connect(string ip)
-        {
-            Connect(IPUtils.GetIP(ip), port);
-        }
 
-        public void Connect(IPAddress ip)
-        {
-            Connect(ip,port);
-        }
-
-        /// <summary>
-        /// Define o WireConnection Para um saída personalizada para cada aplicação
-        /// </summary>
-        /// <param name="wireConnection"></param>
         public void SetWire(WireConnection wireConnection)
         {
             this.wireConnection = wireConnection;
         }
 
-        
+        public void Receive(byte[] bytes)
+        {
+            wireConnection.Receive(bytes);
+        }
     }
 }

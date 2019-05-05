@@ -8,7 +8,11 @@ namespace SESockets
     public interface Connection
     {
 
-        void Connect(IPAddress iPAddress,int port);
+        void Connect(IPAddress ip);
+
+        void SetWire(WireConnection wireConnection);
+
+        void Send(byte[] bytes);
 
         void Disconnect();
 
