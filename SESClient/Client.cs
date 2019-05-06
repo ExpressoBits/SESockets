@@ -3,11 +3,14 @@ using SESockets;
 using SESockets.TCP;
 using SESockets.UDP;
 using SESockets.Utils;
+using System.Net;
 
 namespace SESockets.Client
 {
     class Client : WireConnection
     {
+        public Comunicator client;
+
         static void Main()
         {
             new Client();
@@ -18,7 +21,7 @@ namespace SESockets.Client
 
         public Client()
         {
-            Comunicator client;
+            
             ConnectionType type = ConnectionType();
 
             Console.Clear();
@@ -45,15 +48,15 @@ namespace SESockets.Client
             bool exit = false;
             while (!exit)
             {
+                Console.Write(">");
                 string t = Console.ReadLine();
                 if (t == "quit")
                 {
                     exit = true;
-                    break;
                 }
                 else
                 {
-                    client.Send(System.Text.Encoding.ASCII.GetBytes(t));
+                    Send(System.Text.Encoding.ASCII.GetBytes(t));
                 }
 
                 
@@ -85,7 +88,22 @@ namespace SESockets.Client
 
         public void Send(byte[] bytes)
         {
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length));
+            client.Send(bytes);
+        }
+
+        public void OnConnectToServer(IPAddress ip)
+        {
+            Log("Connect to " + ip + " with sucess!");
+        }
+
+        public void OnCreateServer(IPAddress ip)
+        {
+            Log("Create server IP:" + ip + " with sucess!");
+        }
+
+        public void OnClientConnectToServer(IPAddress ip)
+        {
+            Log("Client IP:" + ip + " connect!");
         }
     }
 }

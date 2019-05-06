@@ -35,9 +35,8 @@ namespace SESockets.UDP
             }
             else
             {
-                IPEndPoint ipend = new IPEndPoint(ip, Globals.port);
-                connection = new UdpConnectedClient(ipend);
-                AddClient(ipend);
+                connection = new UdpConnectedClient();
+                AddClient(new IPEndPoint(ip, Globals.port));
             }
         }
 
@@ -45,6 +44,7 @@ namespace SESockets.UDP
         {
             if (isServer)
             {
+                wireConnection.Log("Test");
                 Receive(bytes);
             }
 
@@ -78,8 +78,7 @@ namespace SESockets.UDP
         /// <summary>
         /// TODO: We need to add timestamps to timeout and remove clients from the list.
         /// </summary>
-        internal static void RemoveClient(
-        IPEndPoint ipEndpoint)
+        internal static void RemoveClient(IPEndPoint ipEndpoint)
         {
             instance.clientList.Remove(ipEndpoint);
         }

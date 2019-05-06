@@ -55,8 +55,9 @@ namespace SESockets.TCP
             instance = this;
             if (ip == null)
             { // Server: start listening for connections
-                this.isServer = true;
-                listener = new TcpListener(localaddr: IPAddress.Any, port: Globals.port);
+                IPAddress ipserver = IPAddress.Any;
+                listener = new TcpListener(localaddr: ipserver, port: Globals.port);
+                wireConnection.OnCreateServer(ipserver);
                 listener.Start();
                 listener.BeginAcceptTcpClient(OnServerConnect, null);
             }
@@ -66,6 +67,7 @@ namespace SESockets.TCP
                 TcpConnectedClient connectedClient = new TcpConnectedClient(client);
                 clientList.Add(connectedClient);
                 client.BeginConnect(ip, Globals.port, (ar) => connectedClient.EndConnect(ar), null);
+                wireConnection.OnConnectToServer(ip);
             }
         }
 
@@ -95,6 +97,7 @@ namespace SESockets.TCP
         {
             TcpClient tcpClient = listener.EndAcceptTcpClient(ar);
             clientList.Add(new TcpConnectedClient(tcpClient));
+            wireConnection.OnClientConnectToServer(((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address);
             listener.BeginAcceptTcpClient(OnServerConnect, null);
         }
         #endregion

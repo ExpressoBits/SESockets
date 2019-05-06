@@ -18,16 +18,20 @@ namespace SESockets.UDP
         #endregion
 
         #region Init
-        public UdpConnectedClient(IPEndPoint ip = null)
+        public UdpConnectedClient(IPAddress ip = null)
         {
             if (UDPComunicator.instance.isServer)
             {
                 connection = new UdpClient(Globals.port);
+                connection.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             }
             else
             {
-                connection = new UdpClient(ip); // Auto-bind port
+                connection = new UdpClient(); // Auto-bind port
+                //connection.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                //connection.Client.Bind(ipep);
             }
+            
             connection.BeginReceive(OnReceive, null);
         }
 

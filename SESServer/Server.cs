@@ -3,6 +3,7 @@ using SESockets;
 using SESockets.Utils;
 using SESockets.TCP;
 using SESockets.UDP;
+using System.Net;
 
 namespace SESockets.Server
 {
@@ -12,7 +13,7 @@ namespace SESockets.Server
         {
             new Server();
 
-            Console.WriteLine("Enter any to quit...");
+            Console.WriteLine("Type quit to exit server");
             Console.ReadLine();
         }
 
@@ -52,9 +53,6 @@ namespace SESockets.Server
         }
 
 
-
-
-
         public void Log(string message)
         {
             Console.WriteLine("[LOG]" + message);
@@ -69,6 +67,22 @@ namespace SESockets.Server
         {
             Console.WriteLine(System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length));
         }
+
+        public void OnConnectToServer(IPAddress ip)
+        {
+            Log("Connect to " + ip + " with sucess!");
+        }
+
+        public void OnCreateServer(IPAddress ip)
+        {
+            Log("Create server IP:" + ip + " with sucess!");
+        }
+
+        public void OnClientConnectToServer(IPAddress ip)
+        {
+            Log("Client IP:" + ip + " connect!");
+        }
+
     }
 }
 

@@ -56,7 +56,6 @@ namespace SESockets.TCP
 
             string newMessage = System.Text.Encoding.UTF8.GetString(readBuffer, 0, length);
             byte[] bytes = System.Text.Encoding.ASCII.GetBytes(newMessage);
-            //TCPChat.messageToDisplay += newMessage + Environment.NewLine;
             TCPComunicator.instance.Receive(bytes);
 
             if (TCPComunicator.instance.isServer)
