@@ -6,7 +6,7 @@ using System.Net.Sockets;
 
 namespace SESockets.TCP
 {
-    public class TcpConnectedClient
+    public class TCPConnectedClient
     {
 
         #region Data
@@ -28,7 +28,7 @@ namespace SESockets.TCP
         #endregion
 
         #region Init
-        public TcpConnectedClient(TcpClient tcpClient)
+        public TCPConnectedClient(TcpClient tcpClient)
         {
             this.connection = tcpClient;
             this.connection.NoDelay = true; // Disable Nagle's cache algorithm

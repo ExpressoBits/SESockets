@@ -7,24 +7,6 @@ using System.Net.Sockets;
 
 namespace SESockets.TCP
 {
-
-    /// Multithreading (may lead to a lot of mostly-idle threads), 
-    /// non-blocking, 
-    /// select (rec select or non-blocking on single thread)
-
-    /// DNS
-    //IPHostEntry ipHost = Dns.Resolve("google.com");
-    //ipHost.AddressList[0];
-
-    /// Select
-    //List<Socket> listOfSocketsToCheckForRead = new List<Socket>();
-    //listOfSocketsToCheckForRead.Add(tcpClient.Client);
-    //Socket.Select(listOfSocketsToCheckForRead, null, null, 0);
-    //for(int i = 0; i < listOfSocketsToCheckForRead.Count; i++)
-    //{
-    //  listOfSocketsToCheckForRead[i].Receive(...);
-    //}
-
     public class TCPComunicator : Comunicator
     {
 
@@ -35,7 +17,7 @@ namespace SESockets.TCP
         /// For Clients, there is only one and it's the connection to the server.
         /// For Servers, there are many - one per connected client.
         /// </summary>
-        List<TcpConnectedClient> clientList = new List<TcpConnectedClient>();
+        List<TCPConnectedClient> clientList = new List<TCPConnectedClient>();
 
         /// <summary>
         /// Accepts new connections.  Null for clients.
@@ -64,7 +46,7 @@ namespace SESockets.TCP
             else
             { // Client: try connecting to the server
                 TcpClient client = new TcpClient();
-                TcpConnectedClient connectedClient = new TcpConnectedClient(client);
+                TCPConnectedClient connectedClient = new TCPConnectedClient(client);
                 clientList.Add(connectedClient);
                 client.BeginConnect(ip, Globals.port, (ar) => connectedClient.EndConnect(ar), null);
                 wireConnection.OnConnectToServer(ip);
@@ -96,14 +78,14 @@ namespace SESockets.TCP
         void OnServerConnect(IAsyncResult ar)
         {
             TcpClient tcpClient = listener.EndAcceptTcpClient(ar);
-            clientList.Add(new TcpConnectedClient(tcpClient));
+            clientList.Add(new TCPConnectedClient(tcpClient));
             wireConnection.OnClientConnectToServer(((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address);
             listener.BeginAcceptTcpClient(OnServerConnect, null);
         }
         #endregion
 
         #region TCP
-        public void OnDisconnect(TcpConnectedClient client)
+        public void OnDisconnect(TCPConnectedClient client)
         {
             clientList.Remove(client);
         }
@@ -112,7 +94,7 @@ namespace SESockets.TCP
         {
             for (int i = 0; i < instance.clientList.Count; i++)
             {
-                TcpConnectedClient client = instance.clientList[i];
+                TCPConnectedClient client = instance.clientList[i];
                 client.Send(bytes);
             }
         }
