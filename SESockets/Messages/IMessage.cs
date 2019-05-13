@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SESockets.Message
+namespace SESockets.Messages
 {
     //Implementa um interface para mensagem enviadas de sockets
     public interface IMessage

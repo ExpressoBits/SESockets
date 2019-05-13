@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;7
-
-using SESockets;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SESockets.TCP;
+using System.Net;
 
 namespace SESocketsUnitTest
 {
@@ -9,11 +9,11 @@ namespace SESocketsUnitTest
     public class ServerTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void SameIP()
         {
-            Server server = new Server();
-            Console.WriteLine();
-
+            Server server = new Server(27455);
+            Assert.AreEqual(server.ip.ToString(),IPAddress.Any.ToString());
+            Console.WriteLine(server.ip.ToString());
         }
     }
 }
