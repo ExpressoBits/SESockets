@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using SESockets.Utils;
 
 
 namespace SESockets.TCP
@@ -37,7 +38,7 @@ namespace SESockets.TCP
             instance = this;
             if (ip == null)
             { // Server: start listening for connections
-                IPAddress ipserver = IPAddress.Any;
+                IPAddress ipserver = IPUtils.GetLocalIP();
                 listener = new TcpListener(localaddr: ipserver, port: Globals.port);
                 wireConnection.OnCreateServer(ipserver);
                 listener.Start();

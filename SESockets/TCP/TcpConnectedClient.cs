@@ -70,7 +70,7 @@ namespace SESockets.TCP
         {
             connection.EndConnect(ar);
 
-            stream.BeginRead(readBuffer, 0, readBuffer.Length, OnRead, null);
+            stream.EndRead(null);
         }
         #endregion
 
